@@ -1,0 +1,50 @@
+esphome:
+  name: z-table
+  platform: ESP8266
+  board: nodemcu
+
+# Enable logging
+logger:
+
+api: !secret api
+ota: !secret ota
+wifi: !secret wifi
+
+switch:
+  - platform: gpio
+    id: table_up
+    pin:
+      number: D5
+      inverted: yes
+    restore_mode: ALWAYS_OFF
+    name: "Move table up"
+
+  - platform: gpio
+    id: table_down
+    pin:
+      number: D6
+      inverted: yes
+    restore_mode: ALWAYS_OFF
+    name: "Move table down"
+
+  - platform: template
+    id: home
+    name: "Table go home"
+
+cover:
+  - platform: time_based
+    name: "Time Table (Z)"
+
+    open_action:
+      - switch.turn_on: table_up
+      - switch.turn_off: table_down
+    open_duration: 11.5s
+
+    close_action:
+      - switch.turn_on: table_down
+      - switch.turn_off: table_up
+    close_duration: 11.5s
+
+    stop_action:
+      - switch.turn_off: table_down
+      - switch.turn_off: table_up
